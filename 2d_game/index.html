@@ -38,14 +38,13 @@
         for (var c=0; c<brickColumnCount; c++){
           bricks [c] = [];
           for(var r=0; r <brickRowCount; r++){
-            bricks [c] [r] = {x: 0, y: 0 };
+            bricks [c] [r] = {x: 0, y: 0, status: 1 };
           }
         }
 
         document.addEventListener('keydown', keyDownHandler, false);
         document.addEventListener('keyup', keyUpHandler, false);
 
-        var interval = setInterval(draw, 10);
 
         function keyDownHandler(e) {
              if(e.key == "Right" || e.key == "ArrowRight") {
@@ -64,6 +63,20 @@
                  leftPressed = false;
              }
           }
+          function collisionDetection() {
+            for(var c = 0; c < brickColumnCount; c++){
+              for(var r = 0; r <brickRowCount; r++){
+                var b = bricks[c][r];
+                if(b.status==1){
+                  if(x > b.x && b.x + brickWidth && y > b.y && y < b.y + brickHeight){
+                    dy = -dy;
+                    b.status = 0
+                  }
+                }
+              }
+            }
+          }
+
 
         function drawBall(){
             ctx.beginPath();
@@ -83,6 +96,7 @@
         function drawBricks() {
           for(var c=0; c < brickColumnCount; c++){
             for(var r = 0; r < brickRowCount; r++){
+              if(bricks[c][r].status ==1){
               var brickX = (c*(brickWidth+brickPadding)) + brickOffsetLeft;
               var brickY = (c*(brickHeight+brickPadding))+brickOffsetTop;
               bricks[c][r].x = brickX;
@@ -92,7 +106,7 @@
               ctx.fillStyle = "#0095dd";
               ctx.fill();
               ctx.closePath();
-
+              }
             }
           }
         }
@@ -101,6 +115,7 @@
             drawBricks();
             drawBall();
             drawPaddle();
+            collisionDetection();
 
 
   if(x + dx > canvas.width-ballRadius || x + dx < ballRadius) {
